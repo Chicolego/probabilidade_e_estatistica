@@ -3,6 +3,8 @@
 #include <time.h>
 #include <assert.h>
 
+#define SIZE 12
+
 /* Returns an integer in the range [0, n).
  *
  * Uses rand(), and so is affected-by/affects the same seed.
@@ -32,7 +34,7 @@ int randint(int n) {
 
 //booleano que verifica se todos os vértices já foram visitados.
 int verificar(int vertices[]){
-	for(int i = 0; i < 12; i++){
+	for(int i = 0; i < SIZE; i++){
 		if(vertices[i] == 0){
 			//printf("Vértice %d não foi acessado!\n", i);
 			return 0;
@@ -44,7 +46,7 @@ int verificar(int vertices[]){
 
 //função dedicada a zerar o valor de todos os vértices para que seja possível realizar outra simulação.
 void inicializar(int vertices[]){
-	for(int i = 0; i < 12; i++){
+	for(int i = 0; i < SIZE; i++){
 		vertices[i] = 0;
 	}
 }
@@ -66,28 +68,12 @@ float gerar(int runs, int vertices[]){
 		//processo de uma run.
 		while(!verificar(vertices)){
 			if(randint(2) == 1){
-				pos = (pos+1)%12;
-				vertices[pos]++;
-				
-				/*
-				if(pos-1 < 0){
-					printf("[11] -> [%d].\n", pos);
-				}
-				else{printf("[%d] -> [%d].\n", (pos-1)%12, pos);}
-				*/
-				
+				pos = (((pos+1)%SIZE)+SIZE)%SIZE;
+				vertices[pos]++;			
 			}
 			else{
-				if(pos-1 < 0){
-					pos = 11;
-					vertices[pos]++;
-				}
-				
-				else{pos = (pos-1)%12;}
-				/*
-				printf("[%d] -> [%d].\n", (pos+1)%12, pos);
-				*/
-				
+				pos = (((pos-1)%SIZE)+SIZE)%SIZE;
+				vertices[pos]++;
 			}
 			passos++;
 			//printf("Passo nº%d dado. \n", passos);
@@ -96,7 +82,7 @@ float gerar(int runs, int vertices[]){
 	}
 	
 	//retorno da quantidade média de passos para atingir o objetivo de uma run.
-	return (total_passos/runs);
+	return ((float)total_passos/runs);
 }
 
 int main(int argc, char* argv[]){
@@ -104,7 +90,7 @@ int main(int argc, char* argv[]){
 	//variáveis globais.
 	float media;
 	int runs = 0;
-	int vertices[12];
+	int vertices[SIZE];
 	srand(time(NULL));
 	
 	//inicialização do vetor de vértices. O conteúdo de cada índice representa a quantidade de acessos que já ocorreram ao respectivo vértice.
@@ -120,7 +106,7 @@ int main(int argc, char* argv[]){
 	runs = atoi(argv[1]);
 	media = gerar(runs, vertices);
 	
-	printf("Após %d execuções, constatamos que o valor médio de passos para passar por todos os vértices é %.2f.\n", runs, media);
+	printf("Após %d execuções, constatamos que o valor médio de passos para passar por todos os vértices é %.2f\n", runs, media);
 	
 	return 0;
 }
